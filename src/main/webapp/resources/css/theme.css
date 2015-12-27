@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.header-container {
+	height: 100px;
+	width: 100%;
+	border: 1px solid grey;
+}
+
+.footer-container {
+	height: 100px;
+	width: 100%;
+	border: 1px solid grey;
+}
