@@ -1,4 +1,4 @@
-package org.ramazan.mvc101.api.client.impl;
+package org.ramazan.mvc101.web.api.client.impl;
 
 import javax.annotation.PostConstruct;
 

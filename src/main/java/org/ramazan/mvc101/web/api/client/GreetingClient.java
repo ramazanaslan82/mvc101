@@ -1,4 +1,4 @@
-package org.ramazan.mvc101.api.client;
+package org.ramazan.mvc101.web.api.client;
 
 import org.ramazan.mvc101.core.model.Greeting;
 
