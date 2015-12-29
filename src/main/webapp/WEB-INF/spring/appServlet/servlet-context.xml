@@ -2,80 +2,98 @@
 <beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
 
-	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
-	
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<mvc:annotation-driven>
-	    <mvc:message-converters>
-	        <beans:bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
-	        <beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
-	    </mvc:message-converters>
+		<mvc:message-converters>
+			<beans:bean
+				class="org.springframework.http.converter.StringHttpMessageConverter" />
+			<beans:bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+		</mvc:message-converters>
 	</mvc:annotation-driven>
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
-	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
-	
+
 	<context:component-scan base-package="org.ramazan.mvc101" />
-	
+
 	<!-- i18n -->
 	<beans:bean id="messageSource"
-        class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-        <beans:property name="basename" value="classpath:i18n/messages" />
-        <beans:property name="defaultEncoding" value="UTF-8" />
-    </beans:bean>
-    
-    <mvc:interceptors>
-        <beans:bean
-            class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-            <beans:property name="paramName" value="language" />
-        </beans:bean>
-    </mvc:interceptors>
-    
-    <beans:bean
-    	id="localeResolver"
-    	class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-    	<beans:property name="defaultLocale" value="en" />
-    </beans:bean>
-    
-    <!-- datasource -->
-    <beans:bean 
-    	id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-			<beans:property name="driverClassName" value="${jdbc.driverClassName}" />
-			<beans:property name="url" value="${jdbc.url}" />
-			<beans:property name="username" value="${jdbc.username}" />
-			<beans:property name="password" value="${jdbc.password}" />
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<beans:property name="basename" value="classpath:i18n/messages" />
+		<beans:property name="defaultEncoding" value="UTF-8" />
 	</beans:bean>
-    
-    <beans:bean 
-    	id="sessionFactory"
-    	class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-    	<beans:property name="dataSource" ref="dataSource"/>
-    	<beans:property name="configLocation" value="classpath:configs/hibernate.cfg.xml"/>
+
+	<mvc:interceptors>
+		<beans:bean
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<beans:property name="paramName" value="language" />
+		</beans:bean>
+	</mvc:interceptors>
+
+	<beans:bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<beans:property name="defaultLocale" value="en" />
+	</beans:bean>
+
+
+	
+	
+	<!-- persistance -->
+	<tx:annotation-driven />
+
+	<!-- transaction manager -->
+	<beans:bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<beans:property name="sessionFactory" ref="sessionFactory" />
+	</beans:bean>
+
+	<!-- connection pool -->
+    <beans:bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:8889/sampledb" />
+        <beans:property name="username" value="root" />
+        <beans:property name="password" value="root" />
+        <beans:property name="initialSize" value="5" />
+        <beans:property name="maxActive" value="10" />
     </beans:bean>
-    
-    <!-- transaction -->
-    <tx:annotation-driven/>
-    <beans:bean
-    	id="transactionManager" 
-    	class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-    	<beans:property name="sessionFactory" ref="sessionFactory" />
-    </beans:bean>
-    
+
+    <!-- spring session manager -->
+    <beans:bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<beans:property name="dataSource" ref="myDataSource" />
+		<beans:property name="mappingLocations" value="classpath:org/ramazan/mvc101/core/model/mapping/*.hbm.xml" />
+		<beans:property name="hibernateProperties">
+			<beans:props>
+				<beans:prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</beans:prop>
+				<beans:prop key="hbm2ddl.auto">create</beans:prop>
+				<beans:prop key="show_sql">true</beans:prop>
+				<beans:prop key="format_sql">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+		
+
+
 </beans:beans>
-
-
 

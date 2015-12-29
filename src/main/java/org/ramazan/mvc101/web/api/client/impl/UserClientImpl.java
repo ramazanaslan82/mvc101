@@ -14,7 +14,9 @@ public class UserClientImpl extends BaseClientImpl implements UserClient {
 
 	@Override
 	public User getUser(Long userId) {
-		return restTemplate.getForObject(getBaseUrl() + "users/" + userId, User.class);
+		String url = getBaseUrl() + "users/" + userId;
+		
+		return restTemplate.getForObject(url, User.class);
 	}
 
 }

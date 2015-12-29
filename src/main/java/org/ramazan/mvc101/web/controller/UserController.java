@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Handles requests for the application home page.
@@ -28,7 +28,7 @@ public class UserController extends BaseController {
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-	public String getUser(Locale locale, Model model, @RequestParam(value = "id", defaultValue = "null") Long id) {
+	public String getUser(Locale locale, Model model, @PathVariable(value = "id") Long id) {
 		logger.info("Welcome users! The client locale is {}.", locale);
 
 		setTime(locale, model);
